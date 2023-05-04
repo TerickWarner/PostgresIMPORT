@@ -26,16 +26,11 @@ for i in glob.glob("C:/Users/teric/Desktop/sql_learning/amazon_data/*.csv"):
     cur = conn.cursor()
     cur.execute(f"DROP TABLE IF EXISTS RAWamazon.{table_name}; CREATE TABLE RAWamazon.{table_name} (name VARCHAR, main_category VARCHAR, sub_category VARCHAR, image VARCHAR, link VARCHAR, ratings VARCHAR, no_of_ratings VARCHAR, discount VARCHAR, actual_price VARCHAR);")
     conn.commit()
-    conn.close()
-
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=PORT)
-    cur = conn.cursor()
+    
     cur.execute(f"COPY RAWamazon.{table_name} FROM '{i}' DELIMITER ',' CSV HEADER;")
     conn.commit()
-    conn.close()
 
-    conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=PORT)
-    cur = conn.cursor()
+
     cur.execute(f"UPDATE RAWamazon.{table_name} SET actual_price = REPLACE(actual_price, '₹', ''); \
                 UPDATE RAWamazon.{table_name} SET actual_price = REPLACE(actual_price, ',', ''); \
                 UPDATE RAWamazon.{table_name} SET discount = REPLACE(discount, '₹', ''); \
@@ -82,16 +77,10 @@ conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_
 cur = conn.cursor()
 cur.execute(f"DROP TABLE IF EXISTS final_amazon.all_amazon_data; CREATE TABLE final_amazon.all_amazon_data (index VARCHAR, name VARCHAR, main_category VARCHAR, sub_category VARCHAR, image VARCHAR, link VARCHAR, ratings DECIMAL, no_of_ratings DECIMAL, discount_rupees DECIMAL, actual_price_rupees DECIMAL);")
 conn.commit()
-conn.close()
 
-conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=PORT)
-cur = conn.cursor()
 cur.execute(f"COPY final_amazon.all_amazon_data FROM 'C:/Users/teric/Desktop/sql_learning/all_amazon_data.csv' DELIMITER ',' CSV HEADER;")
 conn.commit()
-conn.close()
 
-conn = psycopg2.connect(dbname=DB_NAME, user=DB_USER, password=DB_PASS, host=DB_HOST, port=PORT)
-cur = conn.cursor()
 cur.execute(f"ALTER TABLE final_amazon.all_amazon_data\
             ALTER COLUMN no_of_ratings SET DATA TYPE INT USING no_of_ratings::INT;")
 conn.commit()
